@@ -15,7 +15,6 @@ dependencies = [
     "click>=8.0.0",
     "pyotp>=2.6.0",
     "beautifulsoup4>=4.9.3",
-    "dnspython>=2.1.0",
     "tldextract>=3.1.0"
 ]
 dynamic = ["version"]
@@ -46,7 +45,7 @@ Issues = "https://github.com/Slinred/strato-acme/issues"
 Changelog = "https://github.com/Slinred/strato-acme/blob/main/CHANGELOG.md"
 
 [project.scripts]
-strato-dns-api = "strato_dns_api.__main__:main"
+strato-dns-api = "strato_dns_api.__main__:cli"
 
 [tool.setuptools.dynamic]
 version = {file = "VERSION"}

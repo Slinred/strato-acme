@@ -1,6 +1,5 @@
 """Strato API for DNS manipulation."""
 import sys
-import os
 import re
 import logging
 import typing
@@ -11,9 +10,6 @@ import urllib
 import pyotp
 import requests
 from bs4 import BeautifulSoup
-import dns.resolver
-import dns.rdatatype
-import time
 import tldextract
 
 from strato_dns_api.strato_dns_api_credentials import StratoDnsApiCredentials

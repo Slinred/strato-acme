@@ -15,6 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.1.1] - 2025-11-20
+
+### Added
+
+- Status badge for pipeline to README.md
+
+### Changed
+
+- Fixed incorrect reference in main script from pyproject.toml, leading to failure in script execution after package installation
+
+### Removed
+
+- Removed unused dependencies
+
+
 ## [0.1.0] - 2025-11-20
 
 ### Added

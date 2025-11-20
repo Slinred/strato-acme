@@ -1,5 +1,7 @@
 # strato-acme
 
+[![Build python package](https://github.com/Slinred/strato-acme/actions/workflows/build-python-package.yml/badge.svg)](https://github.com/Slinred/strato-acme/actions/workflows/build-python-package.yml)
+
 This repository contains
 1. Python API for acccess to DNS system for a domain hosted at strato.de.
 
