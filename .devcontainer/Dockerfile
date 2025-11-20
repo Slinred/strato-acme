@@ -12,7 +12,8 @@ ENV STRATO_CONFIG_DIR=${STRATO_ACME_DIR}/config
 # Install dependencies needed for the acme client and scripts
 RUN apt update && apt install -y curl cron nano bind9-dnsutils socat openssl
 
-# Install acme.sh client
-RUN curl https://get.acme.sh | sh
+RUN curl https://get.acme.sh | sh -s -- home /opt/acme.sh \
+    && ln -s /opt/acme.sh/acme.sh /usr/local/bin/acme.sh
 
-RUN pip3 install -r requirements-dev.txt
+COPY requirements*.txt /tmp
+RUN cd /tmp && pip3 install -r /tmp/requirements-dev.txt

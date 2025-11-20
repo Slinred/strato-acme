@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- acme.sh dnsapi script that uses the python strato DNS api
+- docker container that bundles acme.sh and strato-dns-api to support certificate generation and renewals
 
 ### Changed
 

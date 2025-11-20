@@ -1,0 +1,16 @@
+services:
+  strato_acme:
+    container_name: strato_acme
+    # specify PUID and PGID to have certificates owned by this user and group
+    # environment:
+    #   PUID: 1000
+    #   PGID: 1000
+    image: slinred/strato-acme:latest
+    build:
+      context: ./..
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ../certs:/strato-acme/certs  # this is to get the certificates into a volume or host
+      - ../config:/strato-acme/config  # this is to persist the state of the ACME client and should include the strato-acme-config.json
+      #- ../logs:/strato-acme/logs  # this is to persist logs
+    restart: unless-stopped
