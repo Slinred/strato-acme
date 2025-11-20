@@ -42,7 +42,10 @@ To be able to authenticate two-factor, device name and TOTP secret must be enter
 ### Python API
 
 When the package `strato-dns-api` is installed you can run it via
-```python3 -m strato_dns_api --config myconfig.json get-records --domain example.com`
+```
+python3 -m strato_dns_api --config myconfig.json get-records --domain example.com
+```
+
 This will return the current CNAME/TXT records available on this domain.
 For more commands, see the CLI help.
 
