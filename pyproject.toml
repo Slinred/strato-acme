@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "strato-dns-api"
+description = "A Python API client for managing DNS records via Strato's DNS service."
+keywords = ["strato", "dns", "api", "client", "acme", "letsencrypt", "automation"]
+authors = [{name = "Nils Weyand"}]
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.25.1",
+    "click>=8.0.0",
+    "pyotp>=2.6.0",
+    "beautifulsoup4>=4.9.3",
+    "dnspython>=2.1.0",
+    "tldextract>=3.1.0"
+]
+dynamic = ["version"]
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 3 - Alpha",
+
+  # Indicate who your project is intended for
+  "Intended Audience :: Developers",
+  "Topic :: Webhosting :: Security",
+
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/Slinred/strato-acme"
+Documentation = "https://github.com/Slinred/strato-acme/blob/main/README.md"
+Repository = "https://github.com/Slinred/strato-acme.git"
+Issues = "https://github.com/Slinred/strato-acme/issues"
+Changelog = "https://github.com/Slinred/strato-acme/blob/main/CHANGELOG.md"
+
+[project.scripts]
+strato-dns-api = "strato_dns_api.__main__:main"
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["strato_dns_api*"]

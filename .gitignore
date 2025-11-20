@@ -1,0 +1,12 @@
+strato_auth.json
+.venv
+__pycache__
+.coverage
+.pytest_cache
+*.pyc
+*.pyo
+*.pyd
+.env
+dist
+*.egg-info
+build
