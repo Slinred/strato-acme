@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+
+### Changed
+
+
+### Removed
+
+## [0.1.0] - 2025-11-20
+
+### Added
+
 - Initial version of python API for interacting with Strato domain registrar, supporting:
     - Authentication via Strato customer portal with 2FA TOTP support
     - read current TXT/CNAME records for a domain owned in strato
