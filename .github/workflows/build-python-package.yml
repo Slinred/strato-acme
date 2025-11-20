@@ -23,4 +23,7 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Build package
         run: python -m build
+      - name: Check distributions
+        run:
+          twine check dist/*
      

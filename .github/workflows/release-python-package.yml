@@ -26,8 +26,14 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Build package
         run: python -m build
-      - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.5.2
-        # with:
-        #   password: ${{ secrets.PYPI_API_TOKEN }}
-        
+      - name: Check distributions
+        run:
+          twine check dist/*
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+      - name: publish
+        # gh-action-pypi-publish uses TWINE_PASSWORD automatically
+        uses: pypa/gh-action-pypi-publish@release/v1

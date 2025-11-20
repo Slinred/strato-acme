@@ -28,7 +28,6 @@ classifiers = [
 
   # Indicate who your project is intended for
   "Intended Audience :: Developers",
-  "Topic :: Webhosting :: Security",
 
   # Specify the Python versions you support here.
   "Programming Language :: Python :: 3",
