@@ -1,0 +1,25 @@
+name: Build and release docker image
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  build_and_push_docker_image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: docker buildx setup
+      uses: docker/setup-buildx-action@v3.10.0
+    - name: login to DockerHub
+      env: 
+        DOCKERHUB_LOGIN: ${{ vars.DOCKERHUB_LOGIN }}
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      run: |
+        echo $DOCKERHUB_TOKEN | docker login -u "$DOCKERHUB_LOGIN" --password-stdin
+    - name: Build and push the docker image
+      run: /bin/bash ./docker/build.sh --push
+    - name: Clean up
+      run: |
+        docker logout
