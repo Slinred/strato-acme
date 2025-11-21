@@ -1,39 +1,54 @@
-name: Release python package
+name: CI
+
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    branches: [main, '**']
+  pull_request:
 
 jobs:
-  release-package:
-    name: Release package to PyPI
+  build-python-package:
+    name: Build python package
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/project/strato-dns-api/
-    permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.14
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade build
           pip install -r requirements-dev.txt
+
       - name: Build package
         run: python -m build
+
       - name: Check distributions
         run:
           twine check dist/*
+
       - name: Upload package artifacts
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist/*
-      - name: publish
-        # gh-action-pypi-publish uses TWINE_PASSWORD automatically
-        uses: pypa/gh-action-pypi-publish@release/v1
+          path: dist/
+
+  build-docker-image:
+    name: Build docker image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: docker buildx setup
+      uses: docker/setup-buildx-action@v3.10.0
+
+    - name: Build the docker image
+      run: RELEASE_BUILD=false /bin/bash ./docker/build.sh ${GITHUB_SHA:0:8}
+
+    - name: Clean up
+      run: |
+        docker logout

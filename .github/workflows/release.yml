@@ -1,0 +1,52 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release-pypi:
+    name: Release package to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/strato-dns-api/
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifact from main branch build
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: publish
+        # gh-action-pypi-publish uses TWINE_PASSWORD automatically
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  release-docker:
+    name: Release docker image to DockerHub
+    runs-on: ubuntu-latest
+    environment:
+      name: DockerHub
+      url: https://hub.docker.com/repository/docker/slinred/strato-acme/general
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: docker buildx setup
+      uses: docker/setup-buildx-action@v3.10.0
+
+    - name: login to DockerHub
+      env: 
+        DOCKERHUB_LOGIN: ${{ vars.DOCKERHUB_LOGIN }}
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      run: |
+        echo $DOCKERHUB_TOKEN | docker login -u "$DOCKERHUB_LOGIN" --password-stdin
+
+    - name: Build and push the docker image
+      run: RELEASE_BUILD=true /bin/bash ./docker/build.sh --push
+
+    - name: Clean up
+      run: |
+        docker logout

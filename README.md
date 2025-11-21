@@ -1,6 +1,6 @@
 # strato-acme
 
-[![Build python package](https://github.com/Slinred/strato-acme/actions/workflows/build-python-package.yml/badge.svg)](https://github.com/Slinred/strato-acme/actions/workflows/build-python-package.yml)
+|[![CI](https://github.com/Slinred/strato-acme/actions/workflows/ci.yml/badge.svg)](https://github.com/Slinred/strato-acme/actions/workflows/ci.yml) | [![Release](https://github.com/Slinred/strato-acme/actions/workflows/release.yml/badge.svg)](https://github.com/Slinred/strato-acme/actions/workflows/release.yml)
 
 This repository contains
 1. Python API for acccess to DNS system for a domain hosted at strato.de
@@ -55,8 +55,7 @@ For more commands, see the CLI help.
 
 ### Docker
 
-The repository also contains a ready-to-go docker container/image that wrpas the acme.sh script and the python API for access to strato DNS.
-This allows for automatic certifacte generation/renewals and allows to create wildcard certificates.
+The repository also contains a ready-to-go docker container/image that wraps the acme.sh script and the python API for access to strato DNS. This allows for automatic certificate generation/renewals with wildcard support on domains hosted at Strato.
 
 To build the image locally, run `./docker/build.sh --load` to build the image for all supported platforms in the current version and load it into your local docker images
 
@@ -77,4 +76,3 @@ docker exec strato_acme create-new-wildcard-cert.sh <YOUR_DOMAIN> <YOUR_EMAIL>
 ```
 This will then try to generate a wildcard certificate for `<YOUR_DOMAIN>` and `*.<YOUR_DOMAIN>`.
 If generation was successfull, there will also be a cron job created to automatically renew the certificate before expiration (see official acme.sh docs).
-
