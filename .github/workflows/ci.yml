@@ -47,7 +47,21 @@ jobs:
       uses: docker/setup-buildx-action@v3.10.0
 
     - name: Build the docker image
-      run: RELEASE_BUILD=false /bin/bash ./docker/build.sh ${GITHUB_SHA:0:8}
+      env: 
+        DOCKERHUB_LOGIN: ${{ vars.DOCKERHUB_LOGIN }}
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      run: |
+        if [ "${GITHUB_REF}" == "refs/heads/main" ]; then
+          EXTRA_ARGS="--push"
+          echo "Docker image will be pushed to DockerHub as commit ${GITHUB_SHA:0:8}"
+          echo $DOCKERHUB_TOKEN | docker login -u "$DOCKERHUB_LOGIN" --password-stdin
+        else
+          EXTRA_ARGS=""
+        fi
+      
+        RELEASE_BUILD=false /bin/bash ./docker/build.sh ${GITHUB_SHA:0:8} $EXTRA_ARGS
+
+        docker logout || true
 
     - name: Clean up
       run: |
@@ -98,4 +112,12 @@ jobs:
           git config user.email "github-actions@github.com"
           git tag "$TAG"
           git push origin "$TAG"
+
+      - name: Trigger release workflow
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches \
+            -d '{"event_type":"trigger-release","client_payload":{"version":"${{ steps.get_version.outputs.version }}"}}'
         

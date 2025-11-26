@@ -23,8 +23,11 @@ fi
 
 for TARGET_PLATFORM in $TARGET_PLATFORMS; do
     echo "Building version: $VERSION for target platform $TARGET_PLATFORM"
-    echo docker buildx build --no-cache -f ./docker/Dockerfile "${BUILD_TAGS[@]}" --platform $TARGET_PLATFORM $* .
-    if [ $? -ne 0 ]; then
+    set -x
+    docker buildx build --no-cache -f ./docker/Dockerfile "${BUILD_TAGS[@]}" --platform $TARGET_PLATFORM $* .
+    build_result=$?
+    set +x
+    if [ $build_result -ne 0 ]; then
         echo "Failed to build image!"
         exit 1
     fi

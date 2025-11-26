@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.2.2]
+
+### Added
+
+### Changed
+
+- fixed CI workflow no triggering release flow on tag creation
+- fixed CI not building docker image and added pushing to registry on commits to main
+
+### Removed
+
 ## [0.2.1]
 
 ### Added
