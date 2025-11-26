@@ -52,3 +52,43 @@ jobs:
     - name: Clean up
       run: |
         docker logout
+
+  tag-version-if-needed:
+    name: Tag new version if needed
+    runs-on: ubuntu-latest
+    needs: [build-python-package, build-docker-image]
+    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.modified, 'VERSION')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # fetch all tags
+
+      - name: Read version from VERSION file
+        id: get_version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          TAG="v${{ steps.get_version.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists."
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag $TAG does not exist."
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ steps.get_version.outputs.version }}"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+        

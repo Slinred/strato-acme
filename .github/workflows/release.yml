@@ -50,3 +50,30 @@ jobs:
     - name: Clean up
       run: |
         docker logout
+
+  release-github:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.14
+
+      - name: Get changelog
+        id: changelog
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          python3 ./scripts/version_changelog.py ${VERSION} > version_changelog.md
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body_path: version_changelog.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            dist/*

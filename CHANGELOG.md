@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- reworked CI pipelines to split normal CI and release and avoid duplicate builds
+- added deployment to DockerHub on releases for docker container
+- added automatic release creation in GitHub to release pipeline
 
 ### Removed
 

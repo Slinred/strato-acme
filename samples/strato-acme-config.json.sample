@@ -1,0 +1,9 @@
+{
+  "location": "de",
+  "credentials": {
+    "username": "<username>",
+    "password": "<password>",
+    "totp_secret": "<secret>",
+    "totp_devicename": "<devicename>"
+  }
+}
