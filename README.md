@@ -71,8 +71,13 @@ For a reference, see [docker-compose.yml](docker//docker-compose.yml)
 #### Create certificates
 
 When the container is running in the background (e.g. via `docker compose up -d ...`) use the following command to trigger certificate generation:
-```
-docker exec strato_acme create-new-wildcard-cert.sh <YOUR_DOMAIN> <YOUR_EMAIL>
+```shell
+docker exec strato_acme create-new-wildcard-cert.sh --domain <YOUR_DOMAIN> --email <YOUR_EMAIL> [optional acme.sh options]
 ```
 This will then try to generate a wildcard certificate for `<YOUR_DOMAIN>` and `*.<YOUR_DOMAIN>`.
 If generation was successfull, there will also be a cron job created to automatically renew the certificate before expiration (see official acme.sh docs).
+
+If generation failed or you want to test, it is recommended to use the `--staging` option, so you dont get blocked by the rate limits of LE.
+```shell
+docker exec strato_acme create-new-wildcard-cert.sh --domain <YOUR_DOMAIN> --email <YOUR_EMAIL> --staging
+```

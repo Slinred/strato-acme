@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.4.0]
+
+### Added
+
+### Changed
+
+- fixed issue with release pipeline missing permissions and using wrong tag
+- update wildcard certificate generation script to support additional acme.sh parameter to be able to supply `--staging` manually (e.g. for testing)
+
+### Removed
+
 ## [0.3.0]
 
 ### Added
