@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.3.0]
+
+### Added
+
+### Changed
+
+- fixed issue with not available python dist files in release pipe
+- removed staging from wildcard certificate creation script
+
+### Removed
+
 ## [0.2.3]
 
 ### Added
