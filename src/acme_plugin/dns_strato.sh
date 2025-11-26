@@ -4,6 +4,9 @@ dns_cf_info='Strato
 Site: strato.de
 Options:
   STRATO_API_CONFIG_FILE  Strato API configuration file path
+Requires:
+  - python > 3.10
+  - python package strato-dns-api
 '
 
 PYTHON_STRATO_DNS_API_MODULE="strato-dns-api"
