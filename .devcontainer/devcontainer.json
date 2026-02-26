@@ -8,6 +8,8 @@
 		"context": ".."
 	},
 
+	"postStartCommand": "just install-git-hooks && just setup-python",
+
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 

@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+set -euo pipefail
 
 # Default to root if PUID and PGID are not set
 USER_ID=${PUID:-0}
@@ -28,6 +29,12 @@ if [ "$USER_ID" -ne 0 ] || [ "$GROUP_ID" -ne 0 ]; then
 else
     CERTUSER="root"
 fi
+
+# setup cronjob wrapper
+echo "0 0 * * * ${STRATO_ACME_SCRIPTS_DIR}/acme_cron.sh >>/var/log/crond.log 2>&1" >> /etc/crontabs/$CERTUSER
+chmod 600 /etc/crontabs/$CERTUSER
+echo "Cron job added for user $CERTUSER:"
+cat /etc/crontabs/$CERTUSER
 
 env | grep STRATO_ | sed 's/^/export /' > /etc/environment &&
 chmod +x /etc/environment

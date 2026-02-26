@@ -8,7 +8,7 @@ description = "A Python API client for managing DNS records via Strato's DNS ser
 keywords = ["strato", "dns", "api", "client", "acme", "letsencrypt", "automation"]
 authors = [{name = "Nils Weyand"}]
 readme = {file = "README.md", content-type = "text/markdown"}
-license = {file = "LICENSE"}
+license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
     "requests>=2.25.1",
@@ -17,6 +17,7 @@ dependencies = [
     "beautifulsoup4>=4.9.3",
     "tldextract>=3.1.0"
 ]
+
 dynamic = ["version"]
 classifiers = [
   # How mature is this project? Common values are
@@ -43,6 +44,17 @@ Documentation = "https://github.com/Slinred/strato-acme/blob/main/README.md"
 Repository = "https://github.com/Slinred/strato-acme.git"
 Issues = "https://github.com/Slinred/strato-acme/issues"
 Changelog = "https://github.com/Slinred/strato-acme/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+dev = [
+    "pre-commit~=4.5.0",
+    "ruff~=0.15.0",
+    "pytest~=9.0.0",
+    "pytest-cov",
+    "requests-mock",
+    "build",
+    "twine"
+]
 
 [project.scripts]
 strato-dns-api = "strato_dns_api.__main__:cli"

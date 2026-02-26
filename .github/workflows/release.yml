@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   repository_dispatch:
     types: [trigger-release]
 
@@ -32,7 +32,7 @@ jobs:
       name: pypi
       url: https://pypi.org/project/strato-dns-api/
     permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
     needs: prepare-release
     steps:
       - uses: actions/checkout@v4
@@ -42,11 +42,11 @@ jobs:
       - name: Download python package from CI workflow
         uses: dawidd6/action-download-artifact@v3
         with:
-          workflow: ci.yml                # Name or ID of the workflow
-          workflow_conclusion: success    # Only from successful runs
-          branch: main                    # From main branch
-          name: dist                      # Artifact name
-          path: ./dist                    # Where to download
+          workflow: ci.yml # Name or ID of the workflow
+          workflow_conclusion: success # Only from successful runs
+          branch: main # From main branch
+          name: dist # Artifact name
+          path: ./dist # Where to download
 
       - name: publish
         # gh-action-pypi-publish uses TWINE_PASSWORD automatically
@@ -60,38 +60,38 @@ jobs:
       url: https://hub.docker.com/repository/docker/slinred/strato-acme/general
     needs: prepare-release
     steps:
-    - uses: actions/checkout@v4
-      with:
+      - uses: actions/checkout@v4
+        with:
           ref: ${{ needs.prepare-release.outputs.release_tag }}
 
-    - name: docker buildx setup
-      uses: docker/setup-buildx-action@v3.10.0
+      - name: docker buildx setup
+        uses: docker/setup-buildx-action@v3.10.0
 
-    - name: Tag and push docker image
-      env: 
+      - name: Tag and push docker image
+        env:
           DOCKERHUB_LOGIN: ${{ vars.DOCKERHUB_LOGIN }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      run: |
-        COMMIT_SHORT=${GITHUB_SHA:0:8}
-        VERSION=$(cat VERSION)
+        run: |
+          COMMIT_SHORT=${GITHUB_SHA:0:8}
+          VERSION=$(cat VERSION)
 
-        echo $DOCKERHUB_TOKEN | docker login -u "$DOCKERHUB_LOGIN" --password-stdin
+          echo $DOCKERHUB_TOKEN | docker login -u "$DOCKERHUB_LOGIN" --password-stdin
 
-        # Get the image built in the CI workflow
-        docker pull slinred/strato-acme:${COMMIT_SHORT}
-        # Tag the image with the version tag
-        docker tag slinred/strato-acme:${COMMIT_SHORT} slinred/strato-acme:${VERSION}
-        # Push the version tagged image to DockerHub
-        docker push slinred/strato-acme:${VERSION}
+          # Get the image built in the CI workflow
+          docker pull slinred/strato-acme:${COMMIT_SHORT}
+          # Tag the image with the version tag
+          docker tag slinred/strato-acme:${COMMIT_SHORT} slinred/strato-acme:${VERSION}
+          # Push the version tagged image to DockerHub
+          docker push slinred/strato-acme:${VERSION}
 
-        docker logout || true
+          docker logout || true
 
   release-github:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [ prepare-release, release-pypi, release-docker ]
+    needs: [prepare-release, release-pypi, release-docker]
     permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
       - uses: actions/checkout@v4
         with:
@@ -102,21 +102,26 @@ jobs:
         with:
           python-version: 3.14
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: latest
+
       - name: Download python package from CI workflow
         uses: dawidd6/action-download-artifact@v3
         with:
-          workflow: ci.yml                # Name or ID of the workflow
-          workflow_conclusion: success    # Only from successful runs
-          branch: main                    # From main branch
-          name: dist                      # Artifact name
-          path: ./dist                    # Where to download
+          workflow: ci.yml # Name or ID of the workflow
+          workflow_conclusion: success # Only from successful runs
+          branch: main # From main branch
+          name: dist # Artifact name
+          path: dist # Where to download
 
       - name: Get changelog
         id: changelog
         run: |
           VERSION=$(cat VERSION)
-          python3 ./scripts/version_changelog.py ${VERSION} > version_changelog.md
-      
+          uv run ./scripts/version_changelog.py ${VERSION} > version_changelog.md
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -124,6 +129,7 @@ jobs:
           name: Release ${{ needs.prepare-release.outputs.release_tag }}
           body_path: version_changelog.md
           token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: false
           files: |
             dist/*
             src/acme_plugin/dns_strato.sh

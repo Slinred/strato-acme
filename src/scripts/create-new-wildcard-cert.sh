@@ -1,8 +1,11 @@
-#! /bin/sh
+#! /bin/bash
+set -euo pipefail
 
 # Default to root if PUID and PGID are not set
 USER_ID=${PUID:-0}
 GROUP_ID=${PGID:-0}
+
+trap "deactivate || exit" EXIT
 
 # Parse options
 extra_opts=""
@@ -40,6 +43,7 @@ su-exec $USER_ID:$GROUP_ID sh -c "acme.sh --issue \
   -d '$domain' -d '*.$domain' \
   --no-cron \
   --dns dns_strato \
+  --home ${STRATO_ACME_INSTALL_DIR} \
   --cert-home ${STRATO_ACME_CERTS_DIR} \
   --config-home ${STRATO_ACME_CONFIG_DIR} \
   --log ${STRATO_ACME_LOG_FILE}" $extra_opts
@@ -53,5 +57,3 @@ if [ $Result -ne 0 ]; then
 fi
 
 echo "Certificates created!"
-
-deactivate

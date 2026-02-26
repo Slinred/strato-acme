@@ -1,6 +1,7 @@
 # strato-acme
 
-|[![CI](https://github.com/Slinred/strato-acme/actions/workflows/ci.yml/badge.svg)](https://github.com/Slinred/strato-acme/actions/workflows/ci.yml) | [![Release](https://github.com/Slinred/strato-acme/actions/workflows/release.yml/badge.svg)](https://github.com/Slinred/strato-acme/actions/workflows/release.yml)
+[![CI](https://github.com/Slinred/strato-acme/actions/workflows/ci.yml/badge.svg)](https://github.com/Slinred/strato-acme/actions/workflows/ci.yml)
+[![Release](https://github.com/Slinred/strato-acme/actions/workflows/release.yml/badge.svg)](https://github.com/Slinred/strato-acme/actions/workflows/release.yml)
 
 This repository contains
 1. Python API for acccess to DNS system for a domain hosted at strato.de

@@ -18,7 +18,7 @@ if [ "$RELEASE_BUILD" = "true" ]; then
     BUILD_TAGS=(-t $IMAGE_NAME:${VERSION} -t ${IMAGE_NAME}:latest)
 else
     echo "This is NOT a release build."
-    BUILD_TAGS=(-t $IMAGE_NAME:${VERSION})
+    BUILD_TAGS=(-t $IMAGE_NAME:dev-${VERSION})
 fi
 
 for TARGET_PLATFORM in $TARGET_PLATFORMS; do

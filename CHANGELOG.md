@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- dedicated shell script wrapper for acme.sh cron job inside VENV to ensure correct environment and path handling
+
 ### Changed
+
+- moved to uv for python dependency management and installation in docker image
 
 ### Removed
 
@@ -114,4 +118,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Removed
-
