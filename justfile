@@ -27,12 +27,18 @@ format-just:
 build-version seperator="-":
     @echo $(just git-version){{ seperator }}$BUILD_DATE
 
+build-version-short seperator="-":
+    @echo $(just git-version-short){{ seperator }}$BUILD_DATE
+
 ########################################################################################################################
 # Git
 ########################################################################################################################
 
 git-version:
     @git describe --tags --always --long --dirty
+
+git-version-short:
+    @git describe --tags --always
 
 install-git-hooks:
     git config --local core.hooksPath .githooks
@@ -60,16 +66,32 @@ lint-python:
 format-python:
     uv run ruff format .
 
-build-python:
-    uv build
+build-python release="false":
+    #!/bin/bash
+    if [ "{{ release }}" == "true" ]; then
+        export UV_PUBLISH_VERSION=$(just git-version | awk -F'-' '{print $1".post"$2}')
+    else
+        export UV_PUBLISH_VERSION=$(just git-version | awk -F'-' '{print $1".dev"$2}')
+    fi
+    UV_PUBLISH_VERSION=$UV_PUBLISH_VERSION uv build
     uv run twine check dist/*
 
+build-python-dev: (build-python "false")
+
+build-python-release: (build-python "true")
+
 ########################################################################################################################
-# Python
+# Docker
 ########################################################################################################################
 
-build-docker-dev:
-    RELEASE_BUILD=false ./docker/build.sh $(just build-version) --load --progress plain
+build-docker release="false" version=`just build-version` +ARGS="":
+    RELEASE_BUILD={{ release }} ./docker/build.sh {{ version }} --progress plain {{ ARGS }}
 
-build-docker-release:
-    RELEASE_BUILD=true ./docker/build.sh $(just build-version)
+build-docker-dev: (build-docker "false" ("dev-" + `just build-version`) "--load")
+
+build-docker-release: (build-docker "true")
+
+push-docker-release: (build-docker "true" `just git-version` "--push")
+
+run-docker-dev:
+    docker compose -f docker/docker-compose.yml up -d --force-recreate --pull always --remove-orphans strato_acme

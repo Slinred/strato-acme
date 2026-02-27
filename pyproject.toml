@@ -60,8 +60,36 @@ dev = [
 strato-dns-api = "strato_dns_api.__main__:cli"
 
 [tool.setuptools.dynamic]
-version = {file = "VERSION"}
+version = {attr = "strato_dns_api.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["strato_dns_api*"]
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+line-ending = "auto"
+
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # isort
+    "I",
+    # # pyupgrade
+    # "UP",
+    # # flake8-bugbear
+    # "B",
+    # # flake8-simplify
+    # "SIM",
+]

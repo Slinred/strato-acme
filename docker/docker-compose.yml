@@ -10,7 +10,7 @@ services:
       context: ./..
       dockerfile: docker/Dockerfile
     volumes:
-      - ../certs:/strato-acme/certs  # this is to get the certificates into a volume or host
-      - ../config:/strato-acme/config  # this is to persist the state of the ACME client and should include the strato-acme-config.json
+      - ../certs:/strato-acme/certs # this is to get the certificates into a volume or host
+      - ../config:/strato-acme/config # this is to persist the state of the ACME client and should include the strato-acme-config.json
       #- ../logs:/strato-acme/logs  # this is to persist logs
     restart: unless-stopped
