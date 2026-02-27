@@ -1,6 +1,0 @@
-beautifulsoup4
-pyotp
-requests
-dnspython
-tldextract
-click
