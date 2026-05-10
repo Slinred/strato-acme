@@ -4,11 +4,13 @@ set -euo pipefail
 # Default to root if PUID and PGID are not set
 USER_ID=${PUID:-0}
 GROUP_ID=${PGID:-0}
+domain=""
+email=""
 
 trap "deactivate || exit" EXIT
 
 # Parse options
-extra_opts=""
+extra_opts=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --domain)
@@ -19,13 +21,14 @@ while [ $# -gt 0 ]; do
       email="$2"
       shift 2
       ;;
-    --*)
-      extra_opts="$extra_opts $1"
+    --)
       shift
+      extra_opts+=("$@")
+      break
       ;;
     *)
-      # Stop parsing options at first non-option argument
-      break
+      extra_opts+=("$1")
+      shift
       ;;
   esac
 done
@@ -35,18 +38,32 @@ if [ -z "$domain" ] || [ -z "$email" ]; then
   exit 1
 fi
 
+# Accept either DOMAIN or *.DOMAIN and normalize to base domain.
+if [[ "$domain" == \*.* ]]; then
+  domain="${domain#*.}"
+fi
+
 echo "Creating certificates as user=$USER_ID and group=$GROUP_ID..." &&
 source /etc/environment
 source ${STRATO_ACME_VENV_DIR}/bin/activate
 set -x
-su-exec $USER_ID:$GROUP_ID sh -c "acme.sh --issue \
-  -d '$domain' -d '*.$domain' \
+su-exec $USER_ID:$GROUP_ID acme.sh --register-account \
+  -m "$email" \
+  --home ${STRATO_ACME_INSTALL_DIR} \
+  --cert-home ${STRATO_ACME_CERTS_DIR} \
+  --config-home ${STRATO_ACME_CONFIG_DIR} \
+  --log ${STRATO_ACME_LOG_FILE}
+
+su-exec $USER_ID:$GROUP_ID acme.sh --issue \
+  -d "$domain" -d "*.$domain" \
   --no-cron \
+  --accountemail "$email" \
   --dns dns_strato \
   --home ${STRATO_ACME_INSTALL_DIR} \
   --cert-home ${STRATO_ACME_CERTS_DIR} \
   --config-home ${STRATO_ACME_CONFIG_DIR} \
-  --log ${STRATO_ACME_LOG_FILE}" $extra_opts
+  --log ${STRATO_ACME_LOG_FILE} \
+  "${extra_opts[@]}"
 
 Result=$?
 { set +x; } &> /dev/null
