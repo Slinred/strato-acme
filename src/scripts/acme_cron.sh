@@ -5,11 +5,8 @@ set -euo pipefail
 USER_ID=${PUID:-0}
 GROUP_ID=${PGID:-0}
 
-trap "deactivate || exit" EXIT
-
 echo "CRON: Scheduled renewal of certificates as user=$USER_ID and group=$GROUP_ID..."
 source /etc/environment
-source ${STRATO_ACME_VENV_DIR}/bin/activate
 set -x
 su-exec $USER_ID:$GROUP_ID sh -c "acme.sh --cron \
   --home ${STRATO_ACME_INSTALL_DIR} \

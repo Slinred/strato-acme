@@ -25,7 +25,7 @@ dns_strato_add() {
 
   _saveaccountconf_mutable STRATO_API_CONFIG_FILE "$STRATO_API_CONFIG_FILE"
 
-  python3 -m strato_dns_api --config "$STRATO_API_CONFIG_FILE" add-record --record-type TXT --domain "$fulldomain" --value "$txtvalue"
+  uv run --no-project --python "${STRATO_ACME_VENV_DIR}/bin/python" -m strato_dns_api --config "$STRATO_API_CONFIG_FILE" add-record --record-type TXT --domain "$fulldomain" --value "$txtvalue"
 
   return $?
 }
@@ -39,7 +39,7 @@ dns_strato_rm() {
     return 1
   fi
 
-  python3 -m strato_dns_api --config "$STRATO_API_CONFIG_FILE" del-record --record-type TXT --domain "$fulldomain"
+  uv run --no-project --python "${STRATO_ACME_VENV_DIR}/bin/python" -m strato_dns_api --config "$STRATO_API_CONFIG_FILE" del-record --record-type TXT --domain "$fulldomain"
 
   return $?
 }

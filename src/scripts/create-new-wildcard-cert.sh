@@ -7,8 +7,6 @@ GROUP_ID=${PGID:-0}
 domain=""
 email=""
 
-trap "deactivate || exit" EXIT
-
 # Parse options
 extra_opts=()
 while [ $# -gt 0 ]; do
@@ -45,7 +43,6 @@ fi
 
 echo "Creating certificates as user=$USER_ID and group=$GROUP_ID..." &&
 source /etc/environment
-source ${STRATO_ACME_VENV_DIR}/bin/activate
 set -x
 su-exec $USER_ID:$GROUP_ID acme.sh --register-account \
   -m "$email" \
