@@ -18,6 +18,7 @@ RUN apk add --no-cache bash busybox-suid \
     && apk add --no-cache openrc \
     && apk add --no-cache cronie \
     && apk add --no-cache su-exec \
+    && apk add --no-cache python3 \
     && apk add --no-cache nano \
     && apk add --no-cache bash curl socat bind-tools openssl
 

@@ -5,9 +5,41 @@ on:
       - "*.*.*"
 
 jobs:
+  check-changes:
+    name: Check package changes
+    runs-on: ubuntu-latest
+    outputs:
+      python-package-changed: ${{ steps.changes.outputs.python-package-changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Detect package file changes since last tag
+        id: changes
+        run: |
+          CURRENT_TAG="${GITHUB_REF#refs/tags/}"
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${CURRENT_TAG}$" | head -1)
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous tag found, assuming package changed"
+            echo "python-package-changed=true" >> "$GITHUB_OUTPUT"
+          else
+            CHANGED=$(git diff --name-only "${PREV_TAG}...${CURRENT_TAG}" -- src/ pyproject.toml uv.lock)
+            if [ -n "$CHANGED" ]; then
+              echo "Package files changed since $PREV_TAG:"$'\n'"$CHANGED"
+              echo "python-package-changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "No package files changed since $PREV_TAG, skipping PyPI publish"
+              echo "python-package-changed=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
   release-pypi:
     name: Release package to PyPI
     runs-on: ubuntu-latest
+    needs: check-changes
+    if: needs.check-changes.outputs.python-package-changed == 'true'
     environment:
       name: pypi
       url: https://pypi.org/project/strato-dns-api/
@@ -82,41 +114,43 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     needs: [release-pypi, release-docker]
+    if: always() && !failure() && !cancelled()
     permissions:
-      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+      contents: write
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
         with:
-          python-version: 3.14
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v2
-        with:
-          version: latest
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Download dist artifacts
+        if: needs.release-pypi.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: python-dist
           path: dist/
 
-      - name: Get changelog
-        id: changelog
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          uv run ./scripts/version_changelog.py ${VERSION} > version_changelog.md
+      - name: Generate release notes (latest tag)
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --latest --output release-notes.md
+
+      - name: Generate full changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --output CHANGELOG.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${GITHUB_REF#refs/tags/}
-          name: Release ${GITHUB_REF#refs/tags/}
-          body_path: version_changelog.md
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body_path: release-notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
           fail_on_unmatched_files: false
           files: |
+            CHANGELOG.md
             dist/*
             src/acme_plugin/dns_strato.sh

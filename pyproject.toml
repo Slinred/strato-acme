@@ -43,7 +43,7 @@ Homepage = "https://github.com/Slinred/strato-acme"
 Documentation = "https://github.com/Slinred/strato-acme/blob/main/README.md"
 Repository = "https://github.com/Slinred/strato-acme.git"
 Issues = "https://github.com/Slinred/strato-acme/issues"
-Changelog = "https://github.com/Slinred/strato-acme/blob/main/CHANGELOG.md"
+Changelog = "https://github.com/Slinred/strato-acme/releases"
 
 [dependency-groups]
 dev = [
