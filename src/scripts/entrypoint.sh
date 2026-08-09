@@ -31,18 +31,32 @@ else
 fi
 
 # setup cronjob wrapper
-echo "0 0 * * * ${STRATO_ACME_SCRIPTS_DIR}/acme_cron.sh >>/var/log/crond.log 2>&1" >> /etc/crontabs/$CERTUSER
+# Overwrite (not append) so restarting the container doesn't duplicate the entry
+echo "0 0 * * * ${STRATO_ACME_SCRIPTS_DIR}/acme_cron.sh >>/var/log/crond.log 2>&1" > /etc/crontabs/$CERTUSER
 chmod 600 /etc/crontabs/$CERTUSER
 echo "Cron job added for user $CERTUSER:"
 cat /etc/crontabs/$CERTUSER
 
-env | grep STRATO_ | sed 's/^/export /' > /etc/environment &&
+{
+    env | grep STRATO_ | sed 's/^/export /'
+    # cron jobs don't inherit the container's original environment, so PUID/PGID
+    # must be persisted here too, otherwise scripts run via cron default to root
+    echo "export PUID=$USER_ID"
+    echo "export PGID=$GROUP_ID"
+} > /etc/environment
 chmod +x /etc/environment
 
-# Start cron and keep container running
-echo "Starting crond..."
-crond -f &
-echo "Crond started"
+# crond runs the cron job as $CERTUSER, so the log file it appends to must be
+# writable by that user, not just root (who creates it here)
 touch /var/log/crond.log &&
+chown $USER_ID:$GROUP_ID /var/log/crond.log
+
+# Start cron and keep container running
+# -P: inherit PATH from this environment instead of cronie's restrictive default
+# (/bin:/usr/bin:/sbin:/usr/sbin), which is missing /usr/local/bin where acme.sh
+# and uv live
+echo "Starting crond..."
+crond -f -P &
+echo "Crond started"
 echo "Tailing '/var/log/crond.log'..." &&
 tail -f /var/log/crond.log
