@@ -47,9 +47,9 @@ Changelog = "https://github.com/Slinred/strato-acme/releases"
 
 [dependency-groups]
 dev = [
-    "pre-commit~=4.5.0",
-    "ruff~=0.15.0",
-    "pytest~=9.0.0",
+    "prek",
+    "ruff",
+    "pytest",
     "pytest-cov",
     "requests-mock",
     "build",

@@ -40,12 +40,13 @@ git-version:
 git-version-short:
     @git describe --tags --always
 
-install-git-hooks:
-    git config --local core.hooksPath .githooks
-    chmod +x .githooks/*
+install-git-hooks hooks_dir=".githooks":
+    mkdir -p {{ hooks_dir }}
+    git config --local core.hooksPath {{ hooks_dir }}
+    chmod +x {{ hooks_dir }}/* || true
 
-pre-commit:
-    uv run pre-commit run --all-files
+verify-all:
+    uv run --active prek run --all-files
 
 ########################################################################################################################
 # Python
